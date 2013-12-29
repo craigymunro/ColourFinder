@@ -31,6 +31,7 @@
 	<? $demo = "images/boston.gif"; ?>
 
 	<form>
+		<label>Enter an image URL:</label>
 		<input name="image" placeholder="Select an image" value="<?=$demo?>"/>
 		<button>Go</button>
 	</form>
