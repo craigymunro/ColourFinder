@@ -28,11 +28,11 @@
 	<h1>ColourFinder</h1>
 	<p>Lightweight library to extract the dominant colour palette from an image. Uses Javascript and Canvas.</p>
 	
-	<? $demo = "images/boston.gif"; ?>
+	<? $demo = "http://www.craigmunro.net/ColourFinder/images/boston.gif"; ?>
 
 	<form>
 		<label>Enter an image URL:</label>
-		<input name="image" placeholder="Select an image" value="<?=$demo?>"/>
+		<input name="image" placeholder="Select an image" value="<?=$demo?>" style="width: 300px;"/>
 		<button>Go</button>
 	</form>
 
