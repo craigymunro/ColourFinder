@@ -27,20 +27,23 @@
 	
 	<h1>ColourFinder</h1>
 	<p>Lightweight library to extract the dominant colour palette from an image. Uses Javascript and Canvas.</p>
+	
+	<? $demo = "images/boston.gif"; ?>
 
 	<form>
-		<input name="image" placeholder="Select an image" value="boston.gif"/>
+		<input name="image" placeholder="Select an image" value="<?=$demo?>"/>
 		<button>Go</button>
 	</form>
 
 	<canvas id="output"></canvas>
-	<div id="debug"></div>	
+
+	<div id="debug"></div>
 
 	<script>
 		var colourfinder = new ColourFinder(
 			{
 				canvas: $("output"),
-				image: "<?=$_GET["image"] ? $_GET["image"] : "boston.gif";?>"
+				image: "<?=$_GET["image"] ? $_GET["image"] : $demo ?>"
 			}
 		);
 	</script>
