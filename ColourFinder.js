@@ -1,49 +1,87 @@
 ColourFinder = new Class.create({
 	
-	initialize: function(args)
-	{
-		this.canvas = args.canvas;
+	initialize: function()
+	{	
+		this.maxW = 1024;
+		this.maxH = 480;
+		this.canvas = document.createElement("canvas");
 		this.debug = $("debug");
 		this.results = {};
-		this.image = args.image;
-		
-		this.maxW = 640;
-		this.maxH = 480;
 
-		this.run();
+		return;
 	},
-	
-	run: function()
+
+	getDominant: function(image)
 	{
+		this.getPalette(image, 1);
+	},
+
+	getAverage: function(image)
+	{	
 		var img = new Image();
-		new Event.observe(img, "load", this.loaded.bind(this));
-		img.src = "proxy.php?t=" + this.image;
+		new Event.observe(img, "load", this.processAverage.bind(this));
+		img.src = image.src;
 	},
-	
-	loaded: function(e)
+
+	processAverage: function(e)
 	{
-		var w = Math.min(this.maxW, e.target.width);
-		var h = Math.min(this.maxH, e.target.height);
+		var image = e.target;
+		var w = 1;
+		var h = 1;
 
 		this.canvas.width = w;
 		this.canvas.height = h;
 
 	    var ctx = this.canvas.getContext('2d');
-	    ctx.drawImage(e.target, 0, 0, w, h);
+	    ctx.drawImage(image, 0, 0, w, h);
+
+		// Find pixels
+		var pix = ctx.getImageData(0, 0, w, h).data;
+						
+		var hex = this.rgbToHex(
+			pix[0],
+			pix[1],
+			pix[2]
+		);
+
+		new Insertion.Bottom(this.debug, new Element("span", { style: "background-color: #" + hex }).update("Average: #" + hex));
+	},
+	
+	getPalette: function(image, size)
+	{
+		var size = size ? size : 8;
+		
+		var img = new Image();
+		new Event.observe(img, "load", this.processPalette.bind(this, size));
+		img.src = image.src;
+	},
+	
+	processPalette: function(size, e)
+	{
+		var image = e.target;
+		var aspect = image.width / image.height;
+		var w = Math.min(this.maxW, image.width);
+		var h = Math.floor(w * aspect);
+		
+		this.canvas.width = w;
+		this.canvas.height = h;
+
+	    var ctx = this.canvas.getContext('2d');
+	    ctx.drawImage(image, 0, 0, w, h);
 
 		// Find pixels
 		var pix = ctx.getImageData(0, 0, w, h).data;
 		
 		// accuracy level for colour groupings
-		var acc = 25;
+		var accuracy = 60;
 		
 		// Loop over each pixel and find the colour.
 		for (var i = 0, n = pix.length; i < n; i += 4)
 		{
 			var hex = this.rgbToHex(
-				Math.round(pix[i] / acc) * acc,
-				Math.round(pix[i+1] / acc) * acc,
-				Math.round(pix[i+2] / acc) * acc
+				Math.round(pix[i] / accuracy) * accuracy,
+				Math.round(pix[i+1] / accuracy) * accuracy,
+				Math.round(pix[i+2] / accuracy) * accuracy
 			);
 			
 			this.results[hex] ? this.results[hex]++ : this.results[hex] = 1;
@@ -59,9 +97,9 @@ ColourFinder = new Class.create({
 		
 		for(i = 0; i < sortable.length; i++)
 		{
-			if(i < 8)
+			if(i < size)
 			{
-				new Insertion.Bottom(this.debug, new Element("span", { style: "background-color: #" + sortable[i][0] }).update("#" + sortable[i][0]));
+				new Insertion.Bottom(this.debug, new Element("span", { style: "background-color: #" + sortable[i][0] }).update((size > 1 ? (i+1) + ". " : "") + "#" + sortable[i][0]));
 			}
 		}
 	},
