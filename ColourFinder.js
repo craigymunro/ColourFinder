@@ -5,7 +5,6 @@ ColourFinder = new Class.create({
 		this.maxW = 1024;
 		this.maxH = 480;
 		this.canvas = document.createElement("canvas");
-		this.debug = $("debug");
 		this.results = {};
 
 		return;
@@ -43,26 +42,17 @@ ColourFinder = new Class.create({
 			pix[1],
 			pix[2]
 		);
-
-		new Insertion.Bottom(this.debug, new Element("span", { style: "background-color: #" + hex }).update("Average: #" + hex));
+		
+		return hex;
 	},
 	
 	getPalette: function(image, size)
 	{
 		var size = size ? size : 8;
-		
-		var img = new Image();
-		new Event.observe(img, "load", this.processPalette.bind(this, size));
-		img.src = image.src;
-	},
-	
-	processPalette: function(size, e)
-	{
-		var image = e.target;
 		var aspect = image.width / image.height;
 		var w = Math.min(this.maxW, image.width);
 		var h = Math.floor(w * aspect);
-		
+				
 		this.canvas.width = w;
 		this.canvas.height = h;
 
@@ -73,7 +63,7 @@ ColourFinder = new Class.create({
 		var pix = ctx.getImageData(0, 0, w, h).data;
 		
 		// accuracy level for colour groupings
-		var accuracy = 60;
+		var accuracy = 35;
 		
 		// Loop over each pixel and find the colour.
 		for (var i = 0, n = pix.length; i < n; i += 4)
@@ -95,13 +85,22 @@ ColourFinder = new Class.create({
 		}
 		sortable.sort(function(a, b) { return b[1] - a[1] });
 		
+		var returner = []
+		
+		if(size == 1)
+		{
+			return sortable[0][0];
+		}
+		
 		for(i = 0; i < sortable.length; i++)
 		{
 			if(i < size)
 			{
-				new Insertion.Bottom(this.debug, new Element("span", { style: "background-color: #" + sortable[i][0] }).update((size > 1 ? (i+1) + ". " : "") + "#" + sortable[i][0]));
+				returner.push(sortable[i][0]);
 			}
 		}
+		
+		return returner;
 	},
 
 	componentToHex: function(c) {
