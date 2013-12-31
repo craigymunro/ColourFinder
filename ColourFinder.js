@@ -3,7 +3,6 @@ ColourFinder = new Class.create({
 	initialize: function()
 	{	
 		this.maxW = 1024;
-		this.maxH = 480;
 		this.canvas = document.createElement("canvas");
 		this.results = {};
 
@@ -17,14 +16,6 @@ ColourFinder = new Class.create({
 
 	getAverage: function(image)
 	{	
-		var img = new Image();
-		new Event.observe(img, "load", this.processAverage.bind(this));
-		img.src = image.src;
-	},
-
-	processAverage: function(e)
-	{
-		var image = e.target;
 		var w = 1;
 		var h = 1;
 
@@ -48,7 +39,8 @@ ColourFinder = new Class.create({
 	
 	getPalette: function(image, size)
 	{
-		var size = size ? size : 8;
+		var size = size ? size : 10;
+		
 		var aspect = image.width / image.height;
 		var w = Math.min(this.maxW, image.width);
 		var h = Math.floor(w * aspect);
